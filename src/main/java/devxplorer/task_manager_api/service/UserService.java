@@ -2,7 +2,6 @@ package devxplorer.task_manager_api.service;
 
 import devxplorer.task_manager_api.dto.UserCreateDTO;
 import devxplorer.task_manager_api.dto.UserDTO;
-import devxplorer.task_manager_api.exception.ResourceNotFoundException;
 import devxplorer.task_manager_api.mapper.UserMapper;
 import devxplorer.task_manager_api.model.User;
 import devxplorer.task_manager_api.repository.UserRepository;
@@ -22,17 +21,9 @@ public class UserService {
     }
 
     public UserDTO createUser(UserCreateDTO dto) {
-
-        if(userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already in use");
-        }
-        if(userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already in use");
-        }
-
         User user = UserMapper.fromCreateDTO(dto);
-        User savedUser = userRepository.save(user);
-        return UserMapper.toDTO(savedUser);
+        User saved = userRepository.save(user);
+        return UserMapper.toDTO(saved);
     }
 
     public List<UserDTO> getAllUsers() {
@@ -41,16 +32,8 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public User getUserById(Long id) {
+    public Optional<UserDTO> getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+                .map(UserMapper::toDTO);
     }
 }

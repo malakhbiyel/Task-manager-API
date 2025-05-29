@@ -28,6 +28,7 @@ public class TaskMapper {
         task.setTitle(dto.getTitle());
         task.setDescription(dto.getDescription());
         task.setDueDate(dto.getDueDate());
+        task.setStatus(dto.getStatus());
         task.setUser(user);
 
         return task;

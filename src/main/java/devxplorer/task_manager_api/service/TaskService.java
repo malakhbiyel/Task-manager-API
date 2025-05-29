@@ -2,46 +2,52 @@ package devxplorer.task_manager_api.service;
 
 import devxplorer.task_manager_api.dto.TaskCreateDTO;
 import devxplorer.task_manager_api.dto.TaskDTO;
-import devxplorer.task_manager_api.exception.ResourceNotFoundException;
 import devxplorer.task_manager_api.mapper.TaskMapper;
+import devxplorer.task_manager_api.model.Status;
 import devxplorer.task_manager_api.model.Task;
 import devxplorer.task_manager_api.model.User;
 import devxplorer.task_manager_api.repository.TaskRepository;
+import devxplorer.task_manager_api.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, UserService userService) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
-    public TaskDTO createTask(Long userId, TaskCreateDTO dto) {
-        User user = userService.getUserById(userId);
-        Task task = TaskMapper.fromCreateDTO(dto, user);
-        Task savedTask = taskRepository.save(task);
-        return TaskMapper.toDTO(savedTask);
+    public Optional<TaskDTO> createTask(Long userId, TaskCreateDTO dto) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) return Optional.empty();
+
+        Task task = TaskMapper.fromCreateDTO(dto, user.get());
+        Task saved = taskRepository.save(task);
+        return Optional.of(TaskMapper.toDTO(saved));
     }
 
     public List<TaskDTO> getTasksByUserId(Long userId) {
-        userService.getUserById(userId);
         return taskRepository.findByUserId(userId).stream()
                 .map(TaskMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public TaskDTO getTaskById(Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + taskId));
-        return TaskMapper.toDTO(task);
+    public Optional<TaskDTO> getTaskById(Long id) {
+        return taskRepository.findById(id).map(TaskMapper::toDTO);
     }
 
-    // Tu peux ajouter d'autres méthodes comme updateTask, deleteTask, etc.
+    public List<TaskDTO> getTasksByStatus(Status status) {
+        return taskRepository.findByStatus(status).stream()
+                .map(TaskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }
