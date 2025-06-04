@@ -6,11 +6,13 @@ import devxplorer.task_manager_api.model.Status;
 import devxplorer.task_manager_api.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/api/tasks")
 public class TaskController {
 
@@ -20,16 +22,16 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<TaskDTO> createTask(@PathVariable Long userId, @RequestBody TaskCreateDTO taskCreateDTO) {
-        return taskService.createTask(userId, taskCreateDTO)
+    @PostMapping
+    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskCreateDTO taskCreateDTO) {
+        return taskService.createTaskForCurrentUser(taskCreateDTO)
                 .map(task -> new ResponseEntity<>(task, HttpStatus.CREATED))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TaskDTO>> getTasksByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(taskService.getTasksByUserId(userId));
+    @GetMapping
+    public ResponseEntity<List<TaskDTO>> getTasksForCurrentUser() {
+        return ResponseEntity.ok(taskService.getTasksForCurrentUser());
     }
 
     @GetMapping("/status/{status}")
@@ -37,4 +39,5 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
 }
+
 

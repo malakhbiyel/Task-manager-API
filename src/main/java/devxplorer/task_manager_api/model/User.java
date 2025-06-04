@@ -19,7 +19,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
