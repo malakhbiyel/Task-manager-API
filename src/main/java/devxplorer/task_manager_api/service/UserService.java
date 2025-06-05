@@ -3,7 +3,6 @@ package devxplorer.task_manager_api.service;
 import devxplorer.task_manager_api.dto.UserCreateDTO;
 import devxplorer.task_manager_api.dto.UserDTO;
 import devxplorer.task_manager_api.mapper.UserMapper;
-import devxplorer.task_manager_api.model.Role;
 import devxplorer.task_manager_api.model.User;
 import devxplorer.task_manager_api.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,4 +55,13 @@ public class UserService {
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    public boolean deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
 }

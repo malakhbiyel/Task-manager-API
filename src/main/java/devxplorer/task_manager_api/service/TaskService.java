@@ -71,4 +71,39 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public Optional<TaskDTO> updateTask(Long id, TaskCreateDTO dto) {
+        User currentUser = getCurrentUser();
+
+        return taskRepository.findById(id)
+                .filter(task -> task.getUser().getId().equals(currentUser.getId()))
+                .map(task -> {
+                    task.setTitle(dto.getTitle());
+                    task.setDescription(dto.getDescription());
+                    task.setDueDate(dto.getDueDate());
+                    task.setStatus(dto.getStatus());
+                    return TaskMapper.toDTO(taskRepository.save(task));
+                });
+    }
+
+    public boolean deleteTask(Long id) {
+        User currentUser = getCurrentUser();
+        return taskRepository.findById(id)
+                .filter(task -> task.getUser().getId().equals(currentUser.getId()))
+                .map(task -> {
+                    taskRepository.delete(task);
+                    return true;
+                }).orElse(false);
+    }
+
+    public Optional<TaskDTO> updateTaskStatus(Long id, Status status) {
+        User currentUser = getCurrentUser();
+        return taskRepository.findById(id)
+                .filter(task -> task.getUser().getId().equals(currentUser.getId()))
+                .map(task -> {
+                    task.setStatus(status);
+                    return TaskMapper.toDTO(taskRepository.save(task));
+                });
+    }
+
+
 }

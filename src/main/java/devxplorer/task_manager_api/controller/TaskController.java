@@ -38,6 +38,28 @@ public class TaskController {
     public ResponseEntity<List<TaskDTO>> getTasksByStatus(@PathVariable Status status) {
         return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskCreateDTO dto) {
+        return taskService.updateTask(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        return taskService.deleteTask(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @RequestParam Status status) {
+        return taskService.updateTaskStatus(id, status)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
 
 
