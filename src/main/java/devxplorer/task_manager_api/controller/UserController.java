@@ -2,6 +2,7 @@ package devxplorer.task_manager_api.controller;
 
 import devxplorer.task_manager_api.dto.UserDTO;
 import devxplorer.task_manager_api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Récupérer la liste de tous les utilisateurs (admin uniquement)")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -27,6 +29,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @Operation(summary = "Récupérer un utilisateur par son ID (admin uniquement)")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
@@ -35,7 +38,9 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/me")
+
+    @Operation(summary = "Récupérer les informations de l'utilisateur connecté")
+    @GetMapping("/user")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,6 +51,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Supprimer un utilisateur par son ID (admin uniquement)")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

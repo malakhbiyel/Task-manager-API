@@ -5,13 +5,17 @@ import devxplorer.task_manager_api.dto.UserDTO;
 import devxplorer.task_manager_api.security.JwtUtil;
 import devxplorer.task_manager_api.service.CustomUserDetailsService;
 import devxplorer.task_manager_api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +39,16 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Authentifier un utilisateur et obtenir un token JWT",
+            requestBody = @RequestBody(
+                    description = "Données de connexion avec username et password",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UserCreateDTO.class))
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Connexion réussie, token JWT retourné"),
+                    @ApiResponse(responseCode = "401", description = "Échec de l'authentification")
+            })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserCreateDTO loginRequest) {
         authenticationManager.authenticate(
@@ -46,6 +60,16 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("token", token));
     }
 
+    @Operation(summary = "Créer un nouvel utilisateur (inscription)",
+            requestBody = @RequestBody(
+                    description = "Données de création d'utilisateur",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UserCreateDTO.class))
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Utilisateur créé avec succès"),
+                    @ApiResponse(responseCode = "400", description = "Données invalides")
+            })
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody UserCreateDTO dto) {
         UserDTO createdUser = userService.createUser(dto);
