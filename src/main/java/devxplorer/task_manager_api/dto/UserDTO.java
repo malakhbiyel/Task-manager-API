@@ -22,7 +22,6 @@ public class UserDTO {
         this.email = email;
     }
 
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

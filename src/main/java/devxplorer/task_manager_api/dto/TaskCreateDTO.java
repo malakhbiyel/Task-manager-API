@@ -22,13 +22,6 @@ public class TaskCreateDTO {
 
     public TaskCreateDTO() {}
 
-    public TaskCreateDTO(String title, String description, LocalDateTime dueDate, Status status) {
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.status = status;
-    }
-
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 

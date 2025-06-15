@@ -55,15 +55,12 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-
-
     public Optional<TaskDTO> getTaskById(Long id) {
         User currentUser = getCurrentUser();
         return taskRepository.findById(id)
                 .filter(task -> task.getUser().getId().equals(currentUser.getId()))
                 .map(TaskMapper::toDTO);
     }
-
 
     public List<TaskDTO> getTasksByStatus(Status status) {
         return taskRepository.findByStatus(status).stream()

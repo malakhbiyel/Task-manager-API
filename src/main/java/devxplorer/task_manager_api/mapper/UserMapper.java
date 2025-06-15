@@ -27,7 +27,6 @@ public class UserMapper {
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
 
-        // Gestion du rôle
         if (dto.getRole() != null && !dto.getRole().isBlank()) {
             try {
                 user.setRole(Role.valueOf(dto.getRole().toUpperCase()));

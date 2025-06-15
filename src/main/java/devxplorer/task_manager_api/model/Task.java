@@ -34,7 +34,6 @@ public class Task {
         this.user = user;
     }
 
-    // Getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

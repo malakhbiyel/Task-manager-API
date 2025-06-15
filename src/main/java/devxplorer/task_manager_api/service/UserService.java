@@ -33,7 +33,6 @@ public class UserService {
 
         User user = UserMapper.fromCreateDTO(dto);
 
-        // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User saved = userRepository.save(user);
